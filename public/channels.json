@@ -1,0 +1,23 @@
+[
+  {
+    "id": "pluto-1",
+    "name": "Pluto Channel One (example)",
+    "stream_url": "https://example.com/stream1.m3u8",
+    "logo": "",
+    "category": "Entertainment"
+  },
+  {
+    "id": "pluto-news",
+    "name": "Pluto News (example)",
+    "stream_url": "https://example.com/news.m3u8",
+    "logo": "",
+    "category": "News"
+  },
+  {
+    "id": "pluto-sports",
+    "name": "Pluto Sports (example)",
+    "stream_url": "https://example.com/sports.m3u8",
+    "logo": "",
+    "category": "Sports"
+  }
+]
