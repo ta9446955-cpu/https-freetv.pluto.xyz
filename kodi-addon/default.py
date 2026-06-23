@@ -1,4 +1,7 @@
 import sys
+import urllib.request
+import urllib.error
+
 try:
     import xbmcgui
     import xbmcplugin
@@ -6,8 +9,6 @@ try:
 except Exception:
     # Running outside Kodi (for debugging)
     xbmcgui = xbmcplugin = xbmcaddon = None
-
-import requests
 
 addon = xbmcaddon.Addon() if xbmcaddon else None
 base_url = addon.getSetting('base_url') if addon else None
@@ -19,9 +20,10 @@ m3u_url = base_url.rstrip('/') + '/api/playlist'
 
 def list_playlists():
     try:
-        r = requests.get(m3u_url, timeout=15)
-        r.raise_for_status()
-        data = r.text
+        req = urllib.request.Request(m3u_url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)')
+        with urllib.request.urlopen(req, timeout=15) as response:
+            data = response.read().decode('utf-8')
     except Exception as e:
         if xbmcgui:
             xbmcgui.Dialog().ok('Error', f'Failed to fetch playlist: {e}')
