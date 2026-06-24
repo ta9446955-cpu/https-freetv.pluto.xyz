@@ -1,0 +1,60 @@
+import sys
+import xbmc
+import xbmcgui
+import xbmcplugin
+import xbmcaddon
+import requests
+
+ADDON = xbmcaddon.Addon(id='plugin.video.pluto_free')
+HANDLE = int(sys.argv[1])
+BASE_URL = "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8"
+
+def get_channels():
+    try:
+        response = requests.get(BASE_URL, timeout=10)
+        content = response.text
+        channels = []
+        
+        lines = content.split('\n')
+        current_channel = {}
+        
+        for line in lines:
+            line = line.strip()
+            if line.startswith('#EXTINF:'):
+                # Extract channel name after comma
+                if ',' in line:
+                    name = line.split(',')[-1]
+                else:
+                    name = "Unknown Channel"
+                current_channel = {'name': name}
+            elif line.startswith('http') and current_channel:
+                current_channel['url'] = line
+                channels.append(current_channel)
+                current_channel = {}
+        
+        return channels
+    except Exception as e:
+        xbmc.log(f"Pluto Free Error: {str(e)}", xbmc.LOGERROR)
+        return []
+
+def list_channels():
+    channels = get_channels()
+    
+    if not channels:
+        xbmcgui.Dialog().notification('Pluto TV', 'No channels found', xbmcgui.NOTIFICATION_ERROR)
+        return
+    
+    for channel in channels:
+        list_item = xbmcgui.ListItem(label=channel['name'])
+        list_item.setInfo('video', {'title': channel['name']})
+        list_item.setProperty('IsPlayable', 'true')
+        xbmcplugin.addDirectoryItem(HANDLE, channel['url'], list_item, isFolder=False)
+    
+    xbmcplugin.endOfDirectory(HANDLE)
+
+def router(paramstring):
+    list_channels()
+
+if __name__ == '__main__':
+    router(sys.argv[2][1:])
+      
