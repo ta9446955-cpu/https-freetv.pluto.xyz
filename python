@@ -1,0 +1,44 @@
+import requests
+
+STITCH_RESOLVER_URL = "https://service-stitcher.clusters.pluto.tv/v2/stitch/hls/channel/{0}"
+
+class PlutoClient(object):
+    # ... (keep everything else the same)
+
+    def get_stream_url(self, channel_id):
+        """Resolve the channel ID to a real signed HLS m3u8 URL."""
+        if not self.session_token:
+            self.boot()
+
+        url = STITCH_RESOLVER_URL.format(channel_id)
+        headers = self._headers()
+        headers["Authorization"] = "Bearer %s" % self.session_token
+
+        params = {
+            "appName": "web",
+            "appVersion": "9.0.0",
+            "deviceVersion": "124.0.0",
+            "deviceMake": "chrome",
+            "deviceModel": "web",
+            "deviceType": "web",
+            "clientID": self.client_id,
+            "clientModelNumber": "1.0.0",
+            "serverSideAds": "false",
+        }
+
+        try:
+            resp = self.session.get(url, headers=headers, params=params, timeout=15)
+            if resp.status_code != 200:
+                log("stream resolve HTTP %s for channel %s" % (resp.status_code, channel_id))
+                return None
+
+            data = resp.json()
+            stream_url = data.get("url") or data.get("sessionUrl") or data.get("hlsUrl")
+            if stream_url:
+                log("resolved stream for %s: %s" % (channel_id, stream_url[:80]))
+                return stream_url
+            log("no url in stitcher response for %s. keys=%s" % (channel_id, list(data.keys())))
+            return None
+        except requests.RequestException as e:
+            log("stream resolve failed for %s: %s" % (channel_id, e))
+            return None
