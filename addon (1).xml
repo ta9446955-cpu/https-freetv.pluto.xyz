@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.pluto_free" version="1.1.0" name="Pluto TV Free" provider-name="ta9446955">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.requests" version="2.22.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Watch Pluto TV's free live channels in Kodi</summary>
+    <description lang="en">Browse and watch Pluto TV's free, ad-supported live TV channels directly in Kodi. Pulls the live channel list straight from Pluto TV and plays the official HLS streams.</description>
+    <platform>all</platform>
+    <language>en</language>
+    <license>MIT</license>
+    <source>https://github.com/ta9446955-cpu/https-freetv.pluto.xyz</source>
+  </extension>
+</addon>
